@@ -108,6 +108,11 @@ EXAMPLE = {
 }
 
 
+def _bump_mtime(path):
+    st = os.stat(path)
+    os.utime(path, (st.st_atime + 2, st.st_mtime + 2))
+
+
 SETUP_SCRIPT_STUB = "__import__('setuptools').setup()"
 
 
@@ -133,6 +138,8 @@ def test_editable_with_pyproject(tmp_path, venv, files, editable_opts):
 
     (project / "src/mypkg/data.txt").write_text("foobar")
     (project / "src/mypkg/mod.py").write_text("x = 42")
+    # same-size rewrite within the same second leaves a stale .pyc valid
+    _bump_mtime(project / "src/mypkg/mod.py")
     assert subprocess.check_output(cmd).strip() == b"3.14159.post0 foobar 42"
 
 
@@ -694,6 +701,9 @@ class TestOverallBehaviour:
 
         mod1.write_text("var = 17", encoding="utf-8")
         mod2.write_text("var = 781", encoding="utf-8")
+        # same-size rewrite within the same second leaves a stale .pyc valid
+        _bump_mtime(mod1)
+        _bump_mtime(mod2)
         resource_file.write_text("resource 374", encoding="utf-8")
 
         out = venv.run(["python", "-c", dedent(cmd_get_vars)])

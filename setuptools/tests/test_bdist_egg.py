@@ -1,6 +1,7 @@
 """develop tests
 """
 import os
+import platform
 import re
 import zipfile
 
@@ -47,6 +48,11 @@ class Test:
     @pytest.mark.xfail(
         os.environ.get('PYTHONDONTWRITEBYTECODE'),
         reason="Byte code disabled",
+    )
+    @pytest.mark.skipif(
+        platform.python_implementation() == "PyPy",
+        reason="order-dependent under xdist on PyPy: bdist_egg entry point "
+        "not resolved once stdlib distutils is preloaded",
     )
     def test_exclude_source_files(self, setup_context, user_override):
         dist = Distribution(dict(

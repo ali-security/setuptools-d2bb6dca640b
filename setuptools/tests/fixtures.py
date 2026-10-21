@@ -55,6 +55,11 @@ def sample_project(tmp_path):
     cmd = ['git', 'clone', 'https://github.com/pypa/sampleproject']
     try:
         subprocess.check_call(cmd, cwd=str(tmp_path))
+        project_path = tmp_path / 'sampleproject'
+        subprocess.check_call(
+            ['git', 'checkout', '3fb1461c7c13b6832ed0f25625b19f2d321a74b7'],
+            cwd=str(project_path)
+        )
     except Exception:
         pytest.skip("Unable to clone sampleproject")
     return tmp_path / 'sampleproject'

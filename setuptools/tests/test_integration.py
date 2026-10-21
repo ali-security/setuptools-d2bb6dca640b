@@ -97,7 +97,7 @@ def test_virtualenvwrapper(install_context):
 
 
 def test_pbr(install_context):
-    _install_one('pbr', install_context,
+    _install_one('pbr==5.11.1', install_context,
                  'pbr', 'core.py')
 
 
